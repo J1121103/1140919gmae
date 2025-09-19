@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打鱷魚遊戲</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .info-item {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .score {
+            color: #e74c3c;
+        }
+
+        .time {
+            color: #3498db;
+        }
+
+        .coins {
+            color: #f39c12;
+        }
+
+        #gameCanvas {
+            border: 3px solid #333;
+            border-radius: 15px;
+            background: #87CEEB;
+            cursor: crosshair;
+            margin: 20px 0;
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .lucky-phrase {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 15px;
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 18px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .coin-animation {
+            position: absolute;
+            color: #f39c12;
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: coinFloat 1s ease-out forwards;
+        }
+
+        @keyframes coinFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(1.5);
+            }
+        }
+
+        .game-record {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .record-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+        <h1>🐊 打鱷魚遊戲 🐊</h1>
+
+        <div class="game-info">
+            <div class="info-item score">分數: <span id="score">0</span></div>
+            <div class="info-item time">時間: <span id="timer">60</span>秒</div>
+            <div class="info-item coins">金幣: <span id="coins">0</span></div>
+        </div>
+
+        <div class="lucky-phrase" id="luckyPhrase">準備開始遊戲！</div>
+
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+
+        <div class="controls">
+            <button class="btn" id="startBtn">開始遊戲</button>
+            <button class="btn" id="pauseBtn" disabled>暫停</button>
+            <button class="btn" id="resetBtn">重新開始</button>
+        </div>
+
+        <div class="game-record" id="gameRecord" style="display: none;">
+            <h3>遊戲記錄</h3>
+            <div class="record-item">遊戲日期: <span id="gameDate"></span></div>
+            <div class="record-item">開始時間: <span id="startTime"></span></div>
+            <div class="record-item">結束時間: <span id="endTime"></span></div>
+            <div class="record-item">總分: <span id="finalScore"></span></div>
+            <div class="record-item">獲得金幣: <span id="finalCoins"></span></div>
+        </div>
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <h2>遊戲結束！</h2>
+        <p>恭喜您完成了打鱷魚遊戲！</p>
+        <p>最終分數: <span id="finalScoreDisplay"></span></p>
+        <p>獲得金幣: <span id="finalCoinsDisplay"></span></p>
+        <button class="btn" onclick="resetGame()">再玩一次</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
