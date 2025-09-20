@@ -14,31 +14,48 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
         .game-container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             text-align: center;
-            max-width: 1200px;
+            max-width: 800px;
             width: 100%;
+            box-sizing: border-box;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                justify-content: flex-start;
+            }
+
+            .game-container {
+                padding: 15px;
+                margin: 0;
+                max-width: 100%;
+            }
         }
 
         h1 {
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .game-info {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
 
         .info-item {
@@ -47,6 +64,19 @@
             border-radius: 10px;
             font-weight: bold;
             color: #333;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .game-info {
+                margin-bottom: 15px;
+                gap: 8px;
+            }
+
+            .info-item {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
         }
 
         .score {
@@ -66,24 +96,81 @@
             border-radius: 15px;
             background: #87CEEB;
             cursor: crosshair;
-            margin: 20px 0;
+            margin: 15px auto;
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            #gameCanvas {
+                width: 100%;
+                max-width: 400px;
+                height: 300px;
+                margin: 10px auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #gameCanvas {
+                width: 100%;
+                max-width: 350px;
+                height: 250px;
+                margin: 8px auto;
+            }
         }
 
         .controls {
-            margin: 20px 0;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                margin: 10px 0;
+            }
         }
 
         .btn {
             background: linear-gradient(45deg, #ff6b6b, #ee5a24);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 12px 20px;
+            font-size: 16px;
             border-radius: 25px;
             cursor: pointer;
-            margin: 0 10px;
+            margin: 0 5px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            min-width: 100px;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                padding: 10px 16px;
+                font-size: 14px;
+                margin: 3px;
+                min-width: 80px;
+                max-width: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                margin: 2px;
+                min-width: 70px;
+                max-width: 100px;
+            }
         }
 
         .btn:hover {
@@ -120,6 +207,16 @@
             font-weight: bold;
             font-size: 18px;
             animation: pulse 1s infinite;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .lucky-phrase.hidden {
+            opacity: 0;
+            visibility: hidden;
         }
 
         @keyframes pulse {
@@ -159,17 +256,36 @@
 
         .game-record {
             background: #f8f9fa;
-            padding: 15px;
+            padding: 8px;
             border-radius: 10px;
-            margin-top: 20px;
+            margin-top: 10px;
             text-align: left;
+            font-size: 12px;
+            max-height: 120px;
+            overflow-y: auto;
         }
 
         .record-item {
-            margin: 5px 0;
-            padding: 5px;
+            margin: 2px 0;
+            padding: 2px 6px;
             background: white;
             border-radius: 5px;
+            font-size: 11px;
+        }
+
+        @media (max-width: 768px) {
+            .game-record {
+                padding: 6px;
+                margin-top: 8px;
+                font-size: 11px;
+                max-height: 100px;
+            }
+
+            .record-item {
+                margin: 1px 0;
+                padding: 1px 4px;
+                font-size: 10px;
+            }
         }
     </style>
 </head>
@@ -186,7 +302,7 @@
 
         <div class="lucky-phrase" id="luckyPhrase">準備開始遊戲！</div>
 
-        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+        <canvas id="gameCanvas" width="700" height="400"></canvas>
 
         <div class="controls">
             <button class="btn" id="startBtn">開始遊戲</button>
@@ -212,6 +328,7 @@
         <button class="btn" onclick="resetGame()">再玩一次</button>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script src="game.js"></script>
 </body>
 
